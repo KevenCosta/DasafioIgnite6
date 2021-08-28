@@ -77,9 +77,37 @@ describe("Get balance of user's amount",()=>{
     .toEqual(getBalance.statement[1].user_id)
   })
 
-  // it("Should not be able to get balance of user's"
-  // +" amount with incorrect user", async()=>{
+  it("Should not be able to get balance of user's"
+   +" amount with incorrect user", async()=>{
 
-  // })
+
+    expect(async()=>{
+      const user = {
+        name: "nameUser",
+        email : "emailUser",
+        password : "senhaUser"
+      }
+      const createdUser = await createUserUseCase.execute(user)
+
+      let type = OperationType.DEPOSIT;
+      let amount = 100;
+      let description = 'insert1'
+      let user_id = typeof(createdUser.id) === 'string'
+        ? createdUser.id : ''
+
+      await createStatementUseCase.execute(
+        {user_id,
+        type,
+        amount,
+        description}
+        )
+
+      user_id = 'error'
+
+      await getBalanceUseCase.execute({user_id})
+
+    }).rejects.toBeInstanceOf(AppError)
+
+   })
 
 })

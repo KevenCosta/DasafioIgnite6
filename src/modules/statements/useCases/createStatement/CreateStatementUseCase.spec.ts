@@ -68,7 +68,7 @@ describe("Create Statement",()=>{
       const amount = 123;
       const description = 'test'
       const user_id = typeof(createdUser.id) === 'string'
-        ? '' : ''//passa user_id vazio para forçar erro
+        ? 'error' : ''
 
       await createStatementUseCase.execute(
         {user_id,
@@ -78,4 +78,45 @@ describe("Create Statement",()=>{
         )
     }).rejects.toBeInstanceOf(AppError)
   })
+
+  it("Should not be able to create an statement of withdraw "
+  +"if user don't have founds",
+  async()=>{
+    expect(async()=>{
+      const user = {
+        name: "nameUser",
+        email : "emailUser",
+        password : "senhaUser"
+      }
+      const createdUser = await createUserUseCase.execute(user)
+
+      let type = OperationType.DEPOSIT;
+      let amount = 100;
+      let description = 'insert1'
+      let user_id = typeof(createdUser.id) === 'string'
+        ? createdUser.id : ''
+
+      if(user_id == ''){
+        throw new AppError("Error in return of create user")}
+
+      await createStatementUseCase.execute(
+        {user_id,
+        type,
+        amount,
+        description}
+        )
+
+      type = OperationType.WITHDRAW
+      amount = 120
+      description = 'insert2'
+
+      await createStatementUseCase.execute(
+        {user_id,
+        type,
+        amount,
+        description}
+        )
+    }).rejects.toBeInstanceOf(AppError)
+  })
+
 })

@@ -47,7 +47,7 @@ describe("Show user profile", ()=>{
     }
     const userRetorno = await createUserUseCase.execute(user)
     const user_id = typeof(userRetorno.id) === 'string'
-      ? '' : ''//passa user_id vazio para forçar erro
+      ? 'error' : ''
 
     expect(async()=>{
     const userProfile = await showUserUseCase.execute(
