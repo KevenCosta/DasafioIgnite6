@@ -10,6 +10,7 @@ interface IRequest {
 }
 
 @injectable()
+//export diferenciado
 export class GetStatementOperationUseCase {
   constructor(
     @inject('UsersRepository')

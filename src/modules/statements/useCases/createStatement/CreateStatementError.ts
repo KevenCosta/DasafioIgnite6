@@ -12,4 +12,10 @@ export namespace CreateStatementError {
       super('Insufficient funds', 400);
     }
   }
+
+  export class SameSendTo extends AppError {
+    constructor() {
+      super("The sender cannot be the same as the recipient! ", 400);
+    }
+  }
 }
