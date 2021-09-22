@@ -12,6 +12,8 @@ let createStatementUseCase : CreateStatementUseCase
 enum OperationType {
   DEPOSIT = 'deposit',
   WITHDRAW = 'withdraw',
+  TRANSFER = 'transfer'
+
 }
 
 describe("Create Statement",()=>{
@@ -38,6 +40,7 @@ describe("Create Statement",()=>{
     const description = 'test'
     const user_id = typeof(createdUser.id) === 'string'
       ? createdUser.id : ''
+    const sender_id = user_id//''
 
     if(user_id == ''){
       throw new AppError("Error in return of create user")}
@@ -46,7 +49,8 @@ describe("Create Statement",()=>{
       {user_id,
       type,
       amount,
-      description}
+      description,
+      sender_id}
       )
 
     expect(createdStatement).toHaveProperty("id")
@@ -69,12 +73,14 @@ describe("Create Statement",()=>{
       const description = 'test'
       const user_id = typeof(createdUser.id) === 'string'
         ? 'error' : ''
+        const sender_id = user_id//''
 
       await createStatementUseCase.execute(
         {user_id,
         type,
         amount,
-        description}
+        description,
+        sender_id}
         )
     }).rejects.toBeInstanceOf(AppError)
   })
@@ -95,7 +101,7 @@ describe("Create Statement",()=>{
       let description = 'insert1'
       let user_id = typeof(createdUser.id) === 'string'
         ? createdUser.id : ''
-
+        const sender_id = user_id//''
       if(user_id == ''){
         throw new AppError("Error in return of create user")}
 
@@ -103,7 +109,8 @@ describe("Create Statement",()=>{
         {user_id,
         type,
         amount,
-        description}
+        description,
+        sender_id}
         )
 
       type = OperationType.WITHDRAW
@@ -114,7 +121,8 @@ describe("Create Statement",()=>{
         {user_id,
         type,
         amount,
-        description}
+        description,
+        sender_id}
         )
     }).rejects.toBeInstanceOf(AppError)
   })

@@ -14,6 +14,7 @@ let getBalanceUseCase : GetBalanceUseCase
 enum OperationType {
   DEPOSIT = 'deposit',
   WITHDRAW = 'withdraw',
+  TRANSFER = 'transfer'
 }
 
 describe("Get balance of user's amount",()=>{
@@ -45,6 +46,8 @@ describe("Get balance of user's amount",()=>{
     let description = 'insert1'
     let user_id = typeof(createdUser.id) === 'string'
       ? createdUser.id : ''
+    let sender_id = typeof(createdUser.id) === 'string'
+      ? createdUser.id : ''
 
     if(user_id == ''){
       throw new AppError("Error in return of create user")}
@@ -53,7 +56,8 @@ describe("Get balance of user's amount",()=>{
       {user_id,
       type,
       amount,
-      description}
+      description,
+      sender_id}
       )
 
     type = OperationType.WITHDRAW
@@ -64,7 +68,8 @@ describe("Get balance of user's amount",()=>{
       {user_id,
       type,
       amount,
-      description}
+      description,
+      sender_id}
       )
 
     const getBalance = await getBalanceUseCase.execute({user_id})
@@ -94,12 +99,15 @@ describe("Get balance of user's amount",()=>{
       let description = 'insert1'
       let user_id = typeof(createdUser.id) === 'string'
         ? createdUser.id : ''
+        let sender_id = typeof(createdUser.id) === 'string'
+        ? createdUser.id : ''
 
       await createStatementUseCase.execute(
         {user_id,
         type,
         amount,
-        description}
+        description,
+        sender_id}
         )
 
       user_id = 'error'

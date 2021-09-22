@@ -5,6 +5,7 @@ import { Connection, createConnection } from "typeorm";
 enum OperationType {
   DEPOSIT = 'deposit',
   WITHDRAW = 'withdraw',
+  TRANSFER = 'transfer'
 }
 
 let connection: Connection;

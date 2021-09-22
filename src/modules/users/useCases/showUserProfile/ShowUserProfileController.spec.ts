@@ -34,18 +34,15 @@ describe("Show user profile", ()=>{
 
       const responseShowUserProfile = await request(app)
       .get("/api/v1/profile")
-      .send({
-        user_id: responseAuthenticated.body.user.id
-      }).set({
+      .set({
         Authorization: `Bearer ${responseAuthenticated.body.token}`
       })
 
-      console.log(responseShowUserProfile.error)
-      //expect(responseShowUserProfile.status).toBe(200)
-      //expect(responseShowUserProfile.body.user).toHaveProperty("name");
+      expect(responseShowUserProfile.status).toBe(200)
+      expect(responseShowUserProfile.body).toHaveProperty("name");
     });
 
-    it("Should not be able to show a user profile with incorrect user",
+    it("Should not be able to show a user profile with incorrect token",
     async ()=>{
       await request(app)
       .post("/api/v1/users")
@@ -64,14 +61,11 @@ describe("Show user profile", ()=>{
 
       const responseShowUserProfile = await request(app)
       .get("/api/v1/profile")
-      .send({
-        user_id: 'idUserError'
-      }).set({
-        Authorization: `Bearer ${responseAuthenticated.body.token}`
+      .set({
+        Authorization: `Bearer ${'tokenError'}`
       })
 
-      //console.log(responseShowUserProfile.error)
-      //expect(responseShowUserProfile.status).toBe(404)
+      expect(responseShowUserProfile.status).toBe(401)
 
     });
 

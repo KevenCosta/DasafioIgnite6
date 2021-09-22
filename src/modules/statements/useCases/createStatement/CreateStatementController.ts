@@ -16,10 +16,31 @@ export class CreateStatementController {
     const sender_id = request.user.id;
 
     const splittedPath = request.originalUrl.split('/')
-    const type = splittedPath[splittedPath.length - 1] as OperationType;
+    //se index = 2 é transfer, se 1 deposit ou withdraw
+    let index = 1
+    const testForIndex = splittedPath[splittedPath.length -index]
+
+
+    if(testForIndex !== 'deposit' && testForIndex !== 'withdraw'){
+      index = 2
+    }else if(testForIndex === 'deposit'){
+        index = 1
+      }
+    else if(testForIndex === 'withdraw'){
+      index = 1
+      }else{
+        throw new Error ("Erro no type de statement")}
+
+    const type = splittedPath[splittedPath.length -index] as OperationType
 
     const createStatement = container.resolve(CreateStatementUseCase);
 
+      console.log(
+      '     user_id: '+user_id,
+      'type: '+type,
+      'amount: '+amount,
+      'description: '+description,
+      'sender_id: '+sender_id)
     const statement = await createStatement.execute({
       user_id,
       type,

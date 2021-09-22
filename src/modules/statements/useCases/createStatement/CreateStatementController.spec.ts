@@ -5,6 +5,7 @@ import { Connection, createConnection } from "typeorm";
 enum OperationType {
   DEPOSIT = 'deposit',
   WITHDRAW = 'withdraw',
+  TRANSFER = 'transfer'
 }
 
 let connection: Connection;
@@ -21,6 +22,11 @@ describe("Create statement", ()=>{
     await connection.query(`
     DELETE FROM USERS
     WHERE USERS.NAME = 'userName'`);
+
+    await connection.query(`
+    DELETE FROM USERS
+    WHERE USERS.NAME = 'userName2'`);
+
     await connection.close();
   })
 
@@ -46,16 +52,16 @@ describe("Create statement", ()=>{
       const responseCreateStatementDeposit = await request(app)
       .post("/api/v1/statements/deposit")
       .send({
-        user_id: responseAuthenticated.body.user.id,
+        user_id: id,
         type: OperationType.DEPOSIT,
         amount: 100,
         description: "insertStatementTest"
       }).set({
-        Authorization: `Bearer ${responseAuthenticated.body.token}`
+        Authorization: `Bearer ${token}`
       })
 
       // console.log(responseCreateStatementDeposit.error)
-      // expect(responseCreateStatementDeposit.status).toBe(201)
+      //expect(responseCreateStatementDeposit.status).toBe(201)
 
     });
 
@@ -66,34 +72,69 @@ describe("Create statement", ()=>{
       .post("/api/v1/statements/withdraw")
       .send({
         user_id: id,
-        type: OperationType.WITHDRAW,
         amount: 100,
         description: "insertStatementTest"
       }).set({
         Authorization: `Bearer ${token}`
       })
       //console.log(responseCreateStatementWithdraw.error)
-      //expect(responseCreateStatement.status).toBe(201)
+      //expect(responseCreateStatementWithdraw.status).toBe(201)
+
+    })
+
+    it("Should be able to create a user statement of transfer",
+    async()=>{
+
+      await request(app)
+      .post("/api/v1/users")
+      .send({
+        name: "userName2",
+        email: "emailUser2",
+        password: "userPassword2"
+      })
+
+      const responseAuthenticated2 = await request(app)
+      .post("/api/v1/sessions")
+      .send({
+        email: "emailUser2",
+        password: "userPassword2"
+      })
+
+      const responseShowUserProfile = await request(app)
+      .get("/api/v1/profile")
+      .set({
+        Authorization: `Bearer ${responseAuthenticated2.body.token}`
+      })
+
+      const responseCreateStatementTransfer= await request(app)
+      .post(`/api/v1/statements/transfer/${responseShowUserProfile.body.id}`)
+      .send({
+        sender_id: id,
+        amount: 100,
+        description: "insertStatementTest"
+      }).set({
+        Authorization: `Bearer ${token}`
+      })
+      console.log(responseCreateStatementTransfer.error)
+      expect(responseCreateStatementTransfer.status).toBe(201)
 
     })
 
     it("Should not be able to create a user statement of withdraw"
-    +" with incorrect user",
+    +" with incorrect token",
     async()=>{
 
       const responseCreateStatementWithdraw = await request(app)
       .post("/api/v1/statements/withdraw")
       .send({
-        user_id: 'userIdError',
-        type: OperationType.WITHDRAW,
+        user_id: id,
         amount: 100,
         description: "insertStatementTest"
       }).set({
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${'tokenError'}`
       })
-      //console.log(responseCreateStatementWithdraw.error)
-      //expect(responseCreateStatementWithdraw.error).toBeInstanceOf(Error)
-      //expect(responseCreateStatementWithdraw.status).toBe(404)
+      expect(responseCreateStatementWithdraw.error).toBeInstanceOf(Error)
+      expect(responseCreateStatementWithdraw.status).toBe(401)
 
     })
 
@@ -105,15 +146,13 @@ describe("Create statement", ()=>{
       .post("/api/v1/statements/withdraw")
       .send({
         user_id: id,
-        type: OperationType.WITHDRAW,
         amount: 100,
         description: "insertStatementTest"
       }).set({
         Authorization: `Bearer ${token}`
       })
-      //console.log(responseCreateStatementWithdraw.error)
-      //expect(responseCreateStatementWithdraw.error).toBeInstanceOf(Error)
-      //expect(responseCreateStatementWithdraw.status).toBe(400)
+      expect(responseCreateStatementWithdraw.error).toBeInstanceOf(Error)
+      expect(responseCreateStatementWithdraw.status).toBe(400)
     })
 
 });

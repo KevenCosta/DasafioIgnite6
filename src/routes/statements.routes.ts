@@ -13,9 +13,9 @@ const getStatementOperationController = new GetStatementOperationController();
 statementRouter.use(ensureAuthenticated);
 
 statementRouter.get('/balance', getBalanceController.execute);
+statementRouter.get('/:statement_id', getStatementOperationController.execute);
 statementRouter.post('/deposit', createStatementController.execute);
 statementRouter.post('/withdraw', createStatementController.execute);
-statementRouter.get('/:statement_id', getStatementOperationController.execute);
-statementRouter.get('/transfers/:user_id', getStatementOperationController.execute);
+statementRouter.post('/transfers/:user_id', createStatementController.execute);
 
 export { statementRouter };

@@ -30,7 +30,7 @@ export class GetBalanceUseCase {
     if(!user) {
       throw new GetBalanceError();
     }
-
+    console.log(user)
     const balance = await this.statementsRepository.getUserBalance({
       user_id,
       with_statement: true

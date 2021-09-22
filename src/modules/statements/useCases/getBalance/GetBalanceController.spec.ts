@@ -5,6 +5,7 @@ import { Connection, createConnection } from "typeorm";
 enum OperationType {
   DEPOSIT = 'deposit',
   WITHDRAW = 'withdraw',
+  TRANSFER = 'transfer'
 }
 
 let connection: Connection;
@@ -46,12 +47,12 @@ describe("Get balance statement", ()=>{
       await request(app)
       .post("/api/v1/statements/deposit")
       .send({
-        user_id: responseAuthenticated.body.user.id,
+        user_id: id,
         type: OperationType.DEPOSIT,
         amount: 100,
         description: "insertStatementTest"
       }).set({
-        Authorization: `Bearer ${responseAuthenticated.body.token}`
+        Authorization: `Bearer ${token}`
       })
 
       await request(app)
@@ -67,33 +68,26 @@ describe("Get balance statement", ()=>{
 
       const getBalance = await request(app)
       .get("/api/v1/statements/balance")
-      .send({
-        user_id: id
-      })
       .set({
         Authorization: `Bearer ${token}`
       })
 
-      //console.log(getBalance.error)
-      //expect(getBalance.status).toBe(201)
+      expect(getBalance.status).toBe(200)
+
   });
 
   it("Should not be able to get balance of user statement "+
-  "with incorrect user",
+  "with incorrect token",
   async ()=>{
 
       const getBalance = await request(app)
       .get("/api/v1/statements/balance")
-      .send({
-        user_id: 'userIdError'
-      })
       .set({
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${'tokenError'}`
       })
 
-      //console.log(getBalance.error)
-      //expect(getBalance.status).toBe(404)
-      //expect(getBalance.error).toBeInstanceOf(Error)
+      expect(getBalance.status).toBe(401)
+      expect(getBalance.error).toBeInstanceOf(Error)
   });
 
 });
