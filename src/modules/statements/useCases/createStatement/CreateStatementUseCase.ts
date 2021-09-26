@@ -16,7 +16,7 @@ export class CreateStatementUseCase {
   ) {}
 
   async execute({ user_id, type, amount, description, sender_id }: ICreateStatementDTO) {
-    const user = await this.usersRepository.findById(user_id);
+    const user = await this.usersRepository.findById(sender_id);
 
     if(!user) {
       throw new CreateStatementError.UserNotFound();

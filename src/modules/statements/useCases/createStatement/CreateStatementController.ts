@@ -31,16 +31,10 @@ export class CreateStatementController {
       }else{
         throw new Error ("Erro no type de statement")}
 
-    const type = splittedPath[splittedPath.length -index] as OperationType
+    const type = splittedPath[splittedPath.length -index].replace('transfers','transfer') as OperationType
 
     const createStatement = container.resolve(CreateStatementUseCase);
 
-      console.log(
-      '     user_id: '+user_id,
-      'type: '+type,
-      'amount: '+amount,
-      'description: '+description,
-      'sender_id: '+sender_id)
     const statement = await createStatement.execute({
       user_id,
       type,
